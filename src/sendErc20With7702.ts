@@ -5,9 +5,15 @@
  * Demonstrates atomic execution of EIP-7702 delegation and token transfer
  * in a single transaction via Alto bundler on Sepolia.
  * 
+ * Architecture:
+ * - EOA (owner.address) remains a regular EOA forever
+ * - Separate SimpleAccount contract deployed at smart account address
+ * - EOA controls smart account through signatures
+ * - Tokens held by smart account, not EOA
+ * 
  * Flow:
- * 1. First execution: Signs EIP-7702 authorization → deploys smart account → transfers tokens
- * 2. Subsequent executions: Transfers tokens only (authorization persists on-chain)
+ * 1. First execution: Signs EIP-7702 authorization → deploys SimpleAccount contract → transfers tokens
+ * 2. Subsequent executions: Transfers tokens only (SimpleAccount already deployed)
  * 
  * @requires ERC20_TOKEN_ADDRESS - Deployed ERC-20 contract address
  * @requires RECEIVER_ADDRESS - Token recipient address
@@ -97,9 +103,10 @@ async function main() {
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
     
     console.log('📝 This transaction will:');
-    console.log('   1. Convert EOA to SimpleAccount via EIP-7702');
-    console.log('   2. Execute ERC-20 transfer');
-    console.log('   3. Both in ONE atomic transaction\n');
+    console.log('   1. Use EIP-7702 to authorize SimpleAccount deployment');
+    console.log('   2. Deploy SimpleAccount contract (separate from EOA)');
+    console.log('   3. Execute ERC-20 transfer from smart account');
+    console.log('   4. All in ONE atomic transaction\n');
 
     console.log('🧾 Building EIP-7702 authorization...');
     console.log(`   Logic Address: ${SIMPLE_ACCOUNT_LOGIC_ADDRESS}`);
@@ -123,7 +130,7 @@ async function main() {
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('📤 Subsequent Transaction: ERC-20 Transfer Only');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
-    console.log('   (EIP-7702 authorization persists on-chain)\n');
+    console.log('   (SimpleAccount contract already deployed, no authorization needed)\n');
   }
 
   console.log('🚀 Sending UserOperation to Alto bundler...');

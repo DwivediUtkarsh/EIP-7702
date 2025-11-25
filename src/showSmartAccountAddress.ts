@@ -23,10 +23,12 @@ async function main() {
   console.log(`   ${simple7702Account.address}\n`);
   
   console.log('📝 Notes:');
-  console.log('   • EOA controls smart account via EIP-7702 delegation');
-  console.log('   • Address is deterministic (counterfactual)');
-  console.log('   • Deployed on first UserOperation');
-  console.log('   • Can receive tokens before deployment\n');
+  console.log('   • These are TWO SEPARATE addresses');
+  console.log('   • EOA remains a regular EOA (not converted)');
+  console.log('   • Smart account is a separate SimpleAccount contract');
+  console.log('   • EOA controls smart account through signatures');
+  console.log('   • Smart account address is deterministic (counterfactual)');
+  console.log('   • Deployed on first UserOperation\n');
 }
 
 main().catch((error) => {
