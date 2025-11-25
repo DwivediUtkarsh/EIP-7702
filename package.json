@@ -1,0 +1,39 @@
+{
+  "name": "eip7702-atomic-userop",
+  "version": "1.0.0",
+  "description": "Atomic EIP-7702 Authorization + UserOperation Execution using Alto Bundler",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "generate-wallet": "tsx scripts/generateWallet.ts",
+    "deploy-token": "tsx scripts/deployToken.ts",
+    "show-aa": "tsx src/showSmartAccountAddress.ts",
+    "check-aa": "tsx src/checkSmartAccount.ts",
+    "check-balances": "tsx src/checkBalances.ts",
+    "send-erc20-7702": "tsx src/sendErc20With7702.ts",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "eip-7702",
+    "account-abstraction",
+    "erc-4337",
+    "pimlico",
+    "alto-bundler",
+    "smart-account"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "permissionless": "^0.2.57",
+    "tslib": "^2.8.1",
+    "viem": "^2.28.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "solc": "^0.8.20",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

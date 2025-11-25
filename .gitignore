@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+.pnpm-debug.log*
+
+# Environment variables
+.env
+.env.local
+
+# TypeScript
+dist/
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Hardhat (if used)
+cache/
+artifacts/
+typechain-types/
+
+# Foundry (if used)
+out/
+cache_forge/
+broadcast/
+
+# Logs
+*.log
+logs/
+
