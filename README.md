@@ -16,6 +16,28 @@ This project implements the complete flow of using EIP-7702 to enable smart cont
 - **Alto Bundler**: Integration with Pimlico's open-source bundler
 - **Live on Sepolia**: Verified transactions on Ethereum testnet
 
+### Bonus Features
+
+Beyond the core assignment requirements, this implementation includes:
+
+**1. Atomic Batch Transfers**
+Send tokens to multiple recipients in a single atomic transaction using SimpleAccount's `executeBatch` function. This demonstrates the power of smart accounts—operations that would normally require multiple transactions (and multiple gas fees) are bundled into one. If any transfer in the batch fails, the entire transaction reverts, ensuring consistency.
+
+```bash
+npm run send-batch
+```
+
+Example: Send 10 TTK to recipient A and 20 TTK to recipient B in ONE transaction with a single gas payment.
+
+**2. Custom Token Deployment**
+Automated script to deploy your own ERC-20 test token directly from the repository. The script compiles the Solidity contract using `solc`, deploys it to Sepolia, and automatically updates your `.env` file with the contract address—no external tools like Hardhat or Foundry required.
+
+```bash
+npm run deploy-token
+```
+
+The deployed TestToken (TTK) includes standard ERC-20 functionality and mints 1,000,000 tokens to the deployer.
+
 ## Live Demo
 
 **Atomic Transaction Hash**: `0x146cfb030078d8fd63ba35aa9b91e9ce60dc6f3ec4c8278c91a56f2d7d7256f9`
@@ -147,6 +169,20 @@ npm run send-erc20-7702
 - Only transfers tokens (no authorization needed)
 - Smart account features already enabled
 
+### 5. Bonus: Batch Transfers (Optional)
+
+```bash
+npm run send-batch
+```
+
+Demonstrates atomic batch transfers to multiple recipients in a single transaction:
+- Sends 10 TTK to `RECEIVER_ADDRESS`
+- Sends 20 TTK to `RECEIVER_ADDRESS2`
+- All in ONE UserOperation with single gas payment
+- If any transfer fails, entire batch reverts
+
+Configure `RECEIVER_ADDRESS2` in your `.env` file to use this feature.
+
 ## Project Structure
 
 ```
@@ -154,6 +190,7 @@ eip7702-atomic-userop/
 ├── src/
 │   ├── clients.ts                  # EIP-7702 + Pimlico client configuration
 │   ├── sendErc20With7702.ts        # Main: atomic transaction executor
+│   ├── sendBatchTransfer.ts        # Bonus: atomic batch transfers
 │   ├── erc20Abi.ts                 # Standard ERC-20 ABI
 │   ├── owner.ts                    # EOA owner management
 │   ├── publicClient.ts             # Sepolia RPC client
@@ -161,8 +198,9 @@ eip7702-atomic-userop/
 │   ├── checkBalances.ts            # Token balance checker
 │   └── showSmartAccountAddress.ts  # Address information display
 ├── scripts/
-│   ├── deployToken.ts              # ERC-20 deployment script
-│   └── generateWallet.ts           # Wallet generation utility
+│   ├── deployToken.ts              # Bonus: ERC-20 deployment script
+│   ├── generateWallet.ts           # Wallet generation utility
+│   └── fundNewWallet.ts            # Helper: fund new wallets with ETH/tokens
 ├── contracts/
 │   └── TestToken.sol               # ERC-20 test token contract
 ├── .env.example                    # Environment variables template
@@ -251,6 +289,21 @@ npm run build
 ```
 
 Compiles TypeScript to JavaScript in the `dist/` directory.
+
+### Available Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run generate-wallet` | Generate a new Ethereum wallet |
+| `npm run deploy-token` | Deploy TestToken ERC-20 contract |
+| `npm run fund-new-wallet` | Send ETH and tokens to a new wallet |
+| `npm run show-aa` | Display EOA and smart account addresses |
+| `npm run check-aa` | Verify smart account status and balances |
+| `npm run check-balances` | Check TTK token balances |
+| `npm run send-erc20-7702` | Execute atomic EIP-7702 + token transfer |
+| `npm run send-batch` | Execute atomic batch transfers (bonus) |
+| `npm run type-check` | Run TypeScript type checking |
+| `npm run build` | Compile TypeScript to JavaScript |
 
 ## Troubleshooting
 
