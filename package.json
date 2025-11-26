@@ -11,6 +11,7 @@
     "check-aa": "tsx src/checkSmartAccount.ts",
     "check-balances": "tsx src/checkBalances.ts",
     "send-erc20-7702": "tsx src/sendErc20With7702.ts",
+    "send-batch": "tsx src/sendBatchTransfer.ts",
     "type-check": "tsc --noEmit"
   },
   "keywords": [
