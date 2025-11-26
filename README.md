@@ -4,7 +4,9 @@ A production-ready implementation demonstrating atomic execution of EIP-7702 aut
 
 ## Overview
 
-This project implements the complete flow of converting an Externally Owned Account (EOA) into a smart contract wallet using EIP-7702, then executing an ERC-20 token transfer—all within a single atomic transaction on Sepolia testnet.
+This project implements the complete flow of using EIP-7702 to enable smart contract wallet capabilities on an Externally Owned Account (EOA), then executing an ERC-20 token transfer—all within a single atomic transaction on Sepolia testnet.
+
+**Note**: The original assignment specified EntryPoint v0.6; this implementation uses EntryPoint v0.8 via Pimlico's infrastructure, which provides the latest features and is fully compatible with the core EIP-7702 functionality demonstrated here.
 
 ### Key Features
 
@@ -16,30 +18,26 @@ This project implements the complete flow of converting an Externally Owned Acco
 
 ## Live Demo
 
-**Atomic Transaction Hash**: `0x035c365270c98bc32f32783d44bd3e58032b6851b4743bc750da109210ccf1d1`
+**Atomic Transaction Hash**: `0x146cfb030078d8fd63ba35aa9b91e9ce60dc6f3ec4c8278c91a56f2d7d7256f9`
 
-[View on Etherscan →](https://sepolia.etherscan.io/tx/0x035c365270c98bc32f32783d44bd3e58032b6851b4743bc750da109210ccf1d1)
+[View on Etherscan →](https://sepolia.etherscan.io/tx/0x146cfb030078d8fd63ba35aa9b91e9ce60dc6f3ec4c8278c91a56f2d7d7256f9)
 
 This transaction demonstrates:
-- EIP-7702 authorization (EOA → SimpleAccount)
-- Smart account deployment
+- EIP-7702 authorization to enable smart account features
+- EOA gains SimpleAccount capabilities at the same address
 - ERC-20 token transfer (10 TTK)
-- All executed atomically in block 9705899
+- All executed atomically on Sepolia testnet
 
 ## Technical Architecture
 
 ```
-┌─────────────────────┐
-│   EOA (Owner)       │  Signs EIP-7702 authorization
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│  Simple Smart       │  to7702SimpleSmartAccount
-│  Account (v0.8)     │  (Eth-Infinitism)
-└──────────┬──────────┘
-           │
-           ▼
+┌──────────────────────────────────────────┐
+│  EOA (Owner) @ 0xYourAddress             │
+│  ↓ EIP-7702 authorization                │
+│  EOA with SimpleAccount code (same addr) │  to7702SimpleSmartAccount
+└───────────────┬──────────────────────────┘
+                │
+                ▼
 ┌─────────────────────┐
 │  Smart Account      │  sendTransaction()
 │  Client             │  (builds UserOperation)
@@ -54,9 +52,11 @@ This transaction demonstrates:
            ▼
 ┌─────────────────────┐
 │  EntryPoint v0.8    │  On-chain execution:
-│  (Sepolia)          │  1. Set EIP-7702 code
-│                     │  2. Execute UserOp
+│  (Sepolia)          │  • EIP-7702 processing sets EOA code
+│                     │  • EntryPoint executes UserOperation
 └─────────────────────┘
+
+Note: EOA and Smart Account share the same address
 ```
 
 ## Prerequisites
@@ -139,13 +139,13 @@ npm run send-erc20-7702
 
 **First Execution:**
 - Creates EIP-7702 authorization
-- Deploys smart account
+- Enables smart account features on EOA
 - Transfers 10 TTK tokens
 - All in ONE transaction
 
 **Subsequent Executions:**
 - Only transfers tokens (no authorization needed)
-- Smart account already deployed
+- Smart account features already enabled
 
 ## Project Structure
 
@@ -202,24 +202,27 @@ if (!isDeployed) {
     nonce,
   });
 
-  // Pass authorization in sendTransaction
-  const txParams = {
+  // Send transaction with EIP-7702 authorization
+  const hash = await smartAccountClient.sendTransaction({
     to: tokenAddress,
     data: transferCalldata,
-    authorization, // Atomic execution
-  };
+    authorization, // EIP-7702: only on first tx
+    value: 0n,
+  });
 }
 ```
 
 ### Important Notes
 
-1. **Authorization Signing**: `to7702SimpleSmartAccount` creates the account but doesn't auto-sign authorization. You must explicitly call `owner.signAuthorization()`.
+1. **Same Address**: With `to7702SimpleSmartAccount`, the EOA and smart account share the same address. EIP-7702 sets the EOA's code to point to SimpleAccount implementation.
 
-2. **EOA Nonce**: Use the EOA's transaction nonce (`getTransactionCount`), not the smart account nonce.
+2. **Authorization Signing**: `to7702SimpleSmartAccount` creates the account but doesn't auto-sign authorization. You must explicitly call `owner.signAuthorization()`.
 
-3. **One-Time Authorization**: Authorization is only required on the first transaction. Subsequent transactions don't need it as the smart account code persists on-chain.
+3. **EOA Nonce**: Use the EOA's transaction nonce (`getTransactionCount`), not the smart account nonce.
 
-4. **Atomic Execution**: The bundler ensures both EIP-7702 delegation and the UserOperation execute in a single transaction.
+4. **Authorization Pattern**: In this implementation, we only send an EIP-7702 authorization in the first transaction. The delegation remains valid until changed, so subsequent UserOperations don't include a new authorization.
+
+5. **Atomic Execution**: The bundler ensures both EIP-7702 delegation and the UserOperation execute in a single transaction.
 
 ## Verification
 
@@ -227,11 +230,11 @@ All transactions can be verified on Sepolia Etherscan:
 
 **Deployed Contracts:**
 - TestToken: [`0x8ccaf35f0d2906cdec896909dcb1654b56501652`](https://sepolia.etherscan.io/address/0x8ccaf35f0d2906cdec896909dcb1654b56501652)
-- Smart Account: [`0x1CCE1f2797240368154a3C9FA5A18072545df508`](https://sepolia.etherscan.io/address/0x1CCE1f2797240368154a3C9FA5A18072545df508)
+- EOA/Smart Account: [`0xE14227b225621B9aACf2fd60dcfdB9384747Be6E`](https://sepolia.etherscan.io/address/0xE14227b225621B9aACf2fd60dcfdB9384747Be6E) (same address)
 
 **Example Transactions:**
-- Atomic (7702 + Transfer): [`0x035c...cf1d1`](https://sepolia.etherscan.io/tx/0x035c365270c98bc32f32783d44bd3e58032b6851b4743bc750da109210ccf1d1)
-- Subsequent Transfer: [`0xe17e...4fee9`](https://sepolia.etherscan.io/tx/0xe17e1bd919bbf1f5e30dfe57b125169c78992e87a7fd8c1b67521ccdb174fee9)
+- Atomic (7702 + Transfer): [`0x146c...56f9`](https://sepolia.etherscan.io/tx/0x146cfb030078d8fd63ba35aa9b91e9ce60dc6f3ec4c8278c91a56f2d7d7256f9)
+- Subsequent Transfer: [`0xdeea...ca03`](https://sepolia.etherscan.io/tx/0xdeea242ccd43ad5e8373e8e9c88ecd0e7ca3f964eeb91d8e4b1258f39278ca03)
 
 ## Development
 
@@ -280,7 +283,8 @@ Compiles TypeScript to JavaScript in the `dist/` directory.
 
 - **Private Keys**: Never commit private keys to version control. Use `.env` files and keep them in `.gitignore`.
 - **Testnet Only**: This implementation is for Sepolia testnet. Additional security measures are required for mainnet deployment.
-- **Authorization Security**: EIP-7702 authorization allows code delegation. Only delegate to trusted, audited contracts.
+- **Authorization Security**: EIP-7702 authorization sets your EOA's code to the specified contract. Only delegate to trusted, audited contracts like Eth-Infinitism's SimpleAccount.
+- **Address Reuse**: With `to7702SimpleSmartAccount`, your EOA address becomes the smart account address. All existing funds at that address remain accessible.
 - **Gas Management**: Monitor gas costs and implement appropriate limits for production use.
 
 ## License
