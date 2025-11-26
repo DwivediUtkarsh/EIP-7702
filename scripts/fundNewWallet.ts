@@ -129,11 +129,12 @@ async function main() {
   });
 
   console.log('🚀 Sending TTK transfer via UserOperation...');
-  const ttkTxHash = await smartAccountClient.sendTransaction({
+  const txParams: any = {
     to: tokenAddress,
     value: 0n,
     data: transferData,
-  });
+  };
+  const ttkTxHash = await smartAccountClient.sendTransaction(txParams);
 
   console.log(`   Transaction hash: ${ttkTxHash}`);
   console.log(`   https://sepolia.etherscan.io/tx/${ttkTxHash}\n`);
