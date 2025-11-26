@@ -7,6 +7,7 @@
     "build": "tsc",
     "generate-wallet": "tsx scripts/generateWallet.ts",
     "deploy-token": "tsx scripts/deployToken.ts",
+    "fund-new-wallet": "tsx scripts/fundNewWallet.ts",
     "show-aa": "tsx src/showSmartAccountAddress.ts",
     "check-aa": "tsx src/checkSmartAccount.ts",
     "check-balances": "tsx src/checkBalances.ts",

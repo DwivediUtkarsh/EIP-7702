@@ -23,12 +23,12 @@ async function main() {
   console.log(`   ${simple7702Account.address}\n`);
   
   console.log('📝 Notes:');
-  console.log('   • These are TWO SEPARATE addresses');
-  console.log('   • EOA remains a regular EOA (not converted)');
-  console.log('   • Smart account is a separate SimpleAccount contract');
-  console.log('   • EOA controls smart account through signatures');
-  console.log('   • Smart account address is deterministic (counterfactual)');
-  console.log('   • Deployed on first UserOperation\n');
+  console.log('   • With to7702SimpleSmartAccount, these addresses are the SAME');
+  console.log('   • EIP-7702 sets the EOA\'s code to SimpleAccount implementation');
+  console.log('   • The EOA address gains smart account capabilities');
+  console.log('   • All funds (ETH/tokens) remain at this single address');
+  console.log('   • Authorization enables smart account features on first transaction');
+  console.log('   • Subsequent transactions use the enabled smart account features\n');
 }
 
 main().catch((error) => {

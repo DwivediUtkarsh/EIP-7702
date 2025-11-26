@@ -6,14 +6,14 @@
  * in a single transaction via Alto bundler on Sepolia.
  * 
  * Architecture:
- * - EOA (owner.address) remains a regular EOA forever
- * - Separate SimpleAccount contract deployed at smart account address
- * - EOA controls smart account through signatures
- * - Tokens held by smart account, not EOA
+ * - Uses EIP-7702 to set EOA's code to SimpleAccount implementation
+ * - EOA address becomes the smart account (same address)
+ * - First transaction sets the delegation, subsequent ones use it
+ * - All tokens and ETH remain at the same address
  * 
  * Flow:
- * 1. First execution: Signs EIP-7702 authorization → deploys SimpleAccount contract → transfers tokens
- * 2. Subsequent executions: Transfers tokens only (SimpleAccount already deployed)
+ * 1. First execution: Signs EIP-7702 authorization → enables smart account features → transfers tokens
+ * 2. Subsequent executions: Transfers tokens using smart account capabilities
  * 
  * @requires ERC20_TOKEN_ADDRESS - Deployed ERC-20 contract address
  * @requires RECEIVER_ADDRESS - Token recipient address
@@ -103,9 +103,9 @@ async function main() {
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
     
     console.log('📝 This transaction will:');
-    console.log('   1. Use EIP-7702 to authorize SimpleAccount deployment');
-    console.log('   2. Deploy SimpleAccount contract (separate from EOA)');
-    console.log('   3. Execute ERC-20 transfer from smart account');
+    console.log('   1. Sign EIP-7702 authorization for SimpleAccount');
+    console.log('   2. Set EOA code to SimpleAccount implementation');
+    console.log('   3. Execute ERC-20 transfer using smart account features');
     console.log('   4. All in ONE atomic transaction\n');
 
     console.log('🧾 Building EIP-7702 authorization...');
